@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#24426E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="九州5日">
+<title>九州 5 日｜旅行 App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E9F1F4;--paper:#FFFFFF;--ink:#1F2E45;--muted:#5B6B80;--ai:#24426E;--shu:#C8402A;--yama:#E3A535;--take:#3F7F5B;--line:#D5E1E8;--wave:rgba(36,66,110,.07);--onai:#FFFFFF;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111A27;--paper:#1A2637;--ink:#E7EEF5;--muted:#9EB0C4;--ai:#8FB4E8;--shu:#F07A5F;--yama:#F2C062;--take:#7CC49A;--line:#2C3B50;--wave:rgba(143,180,232,.06);--onai:#111A27;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111A27;--paper:#1A2637;--ink:#E7EEF5;--muted:#9EB0C4;--ai:#8FB4E8;--shu:#F07A5F;--yama:#F2C062;--take:#7CC49A;--line:#2C3B50;--wave:rgba(143,180,232,.06);--onai:#111A27;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 60px);-webkit-text-size-adjust:100%}
+body{margin:0;background-color:var(--bg);color:var(--ink);font-family:"Zen Maru Gothic","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.6;
+background-image:radial-gradient(circle at 50% 100%,transparent 18px,var(--wave) 19px,var(--wave) 22px,transparent 23px,transparent 30px,var(--wave) 31px,var(--wave) 34px,transparent 35px);background-size:72px 36px;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--ai)}
+button{font:inherit;color:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--yama);outline-offset:2px}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--ai);color:var(--onai);padding:10px 16px;display:flex;align-items:center;gap:10px}
+.top h1{margin:0;font-size:18px;font-weight:900;flex:1}
+.top .sun{width:22px;height:22px;border-radius:50%;background:var(--shu);flex:none}
+.top .cd{font-size:13px;opacity:.9}
+
+main{max-width:640px;margin:0 auto;padding:14px 14px calc(96px + env(safe-area-inset-bottom,0px))}
+.view[hidden],.dayview[hidden]{display:none}
+.card{background:var(--paper);border-radius:24px;padding:16px;margin-bottom:14px;box-shadow:0 3px 0 var(--line)}
+h2{margin:0;font-size:19px;line-height:1.3}
+h3{margin:0 0 8px;font-size:16px;color:var(--ai)}
+.sub{margin:2px 0 0;color:var(--muted);font-size:14px}
+.muted{color:var(--muted)}
+.vt{font-size:22px;margin:6px 4px 12px;display:flex;align-items:center;gap:10px}
+.vt::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--shu)}
+
+/* day selector */
+.dtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.dtab{border:2px solid var(--line);background:var(--paper);border-radius:20px;padding:6px 0;display:flex;flex-direction:column;align-items:center;line-height:1.15}
+.dtab small{font-size:11px;color:var(--muted)} .dtab b{font-size:20px;font-weight:900} .dtab span{font-size:14px}
+.dtab[aria-selected="true"]{border-color:var(--shu);background:var(--shu);color:#fff}
+.dtab[aria-selected="true"] small{color:#fff}
+.dtab .today{font-size:10px}
+
+.dayhead{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;align-items:center}
+.stamp{width:68px;height:68px;border-radius:50%;border:3px solid var(--shu);color:var(--shu);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;transform:rotate(-6deg)}
+.stamp strong{font-size:26px;font-weight:900} .stamp small{font-size:11px;font-weight:700}
+.wx{grid-column:1/-1;display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:16px;padding:8px 12px}
+.wx .wi{font-size:26px;line-height:1} .wx b{font-size:17px} .wx small{color:var(--muted);font-size:13px}
+
+.gl{list-style:none;margin:0;padding:0}
+.gl li{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px dotted var(--line)}
+.gl li:last-child{border:0}
+.meal{font-size:14px;color:var(--muted);margin:8px 0 0}
+.free{background:color-mix(in srgb,var(--yama) 14%,var(--paper))}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:grid;grid-template-columns:58px 1fr;gap:10px;padding:10px 0;border-bottom:1px dotted var(--line)}
+.tl li:last-child{border:0}
+.tl time{font-weight:900;color:var(--shu);font-size:15px}
+.tl p{margin:2px 0 8px;font-size:14px;color:var(--muted)}
+.go{flex:none;display:inline-flex;align-items:center;gap:4px;text-decoration:none;font-size:14px;font-weight:700;color:#fff;background:var(--take);border-radius:999px;padding:6px 12px;white-space:nowrap;min-height:36px}
+.tip{margin:0 0 14px;font-size:14px;background:var(--paper);border-radius:18px;padding:12px 14px;border:2px dashed var(--yama)}
+
+.hotel p{margin:4px 0;font-size:14px}
+.row2{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.call{display:inline-flex;align-items:center;text-decoration:none;font-size:14px;font-weight:700;color:var(--ai);border:2px solid var(--ai);border-radius:999px;padding:4px 12px;min-height:36px}
+.info p,.info li{font-size:14px} .info p{margin:6px 0} .info ul{margin:4px 0;padding-left:18px}
+.phone{border-radius:16px;background:var(--bg);padding:10px 12px;margin-top:10px} .phone b{color:var(--ai)}
+
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--paper);border-radius:999px;padding:4px;gap:4px;margin-bottom:14px;box-shadow:0 3px 0 var(--line)}
+.seg button{border:0;border-radius:999px;padding:8px 0;background:transparent;color:var(--muted);font-weight:700}
+.seg button[aria-selected="true"]{background:var(--ai);color:var(--onai)}
+.chk{list-style:none;margin:0;padding:0}
+.chk li{border-bottom:1px dotted var(--line)} .chk li:last-child{border:0}
+.chk label{display:flex;gap:10px;align-items:center;padding:9px 0;font-size:15px}
+.chk input{accent-color:var(--shu);width:22px;height:22px;flex:none}
+.chk input:checked+span{color:var(--muted);text-decoration:line-through}
+.prog{font-size:13px;color:var(--muted);margin:-6px 4px 12px}
+
+/* converter */
+.conv{border:3px solid var(--ai)}
+.field{position:relative;margin:8px 0}
+.field label{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-weight:900;color:var(--muted);font-size:15px}
+.field input{width:100%;font:inherit;font-size:28px;font-weight:900;padding:12px 54px 12px 62px;border-radius:18px;border:2px solid var(--line);background:var(--bg);color:var(--ink);text-align:right}
+.field input#jpy{border-color:var(--shu)}
+.clr{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:0;background:var(--paper);color:var(--muted);font-size:18px;font-weight:900}
+.expr{min-height:20px;font-size:13px;color:var(--muted);text-align:right;margin:-2px 4px 2px;overflow-wrap:anywhere}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}
+.chip{position:relative;display:flex;border-radius:14px;overflow:hidden;min-width:0;height:44px}
+.chip button{border:0;font-weight:900;flex:1 1 0;min-width:0;padding:0}
+.chip .set{background:color-mix(in srgb,var(--shu) 12%,var(--paper))}
+.chip .add{background:var(--shu);color:#fff;font-size:14px;line-height:1;display:flex;align-items:flex-start;justify-content:flex-end;padding:3px 5px 0 0}
+.chip .lbl{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--paper);color:var(--shu);font-weight:900;font-size:13px;padding:0 6px;border-radius:999px;pointer-events:none;white-space:nowrap}
+.chip button:active{filter:brightness(.92)}
+.rate{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;margin-top:8px}
+.rate input[type=text],.rate input[inputmode]{width:92px;font:inherit;font-weight:700;padding:6px 10px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.btn{border:0;border-radius:999px;padding:8px 14px;background:var(--ai);color:var(--onai);font-weight:700}
+.status{font-size:13px;color:var(--muted);margin:8px 0 0}
+
+/* expenses */
+.form{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form input,.form select{font:inherit;font-size:16px;padding:10px 12px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--ink);min-width:0}
+.form .full{grid-column:1/-1}
+.sum{display:grid;grid-template-columns:2fr 1fr;gap:8px;margin:4px 0 10px}
+.sum div{background:var(--bg);border-radius:16px;padding:10px;text-align:center}
+.sum small{display:block;font-size:12px;color:var(--muted)} .sum b{font-size:17px} .sum i{display:block;font-style:normal;font-size:12px;color:var(--muted)}
+.exp{list-style:none;margin:0;padding:0}
+.exp li{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:9px 0;border-bottom:1px dotted var(--line);font-size:14px}
+.exp li:last-child{border:0}
+.exp .who{font-size:12px;color:var(--muted)}
+.exp .del{border:0;background:color-mix(in srgb,var(--shu) 12%,var(--paper));color:var(--shu);font-size:13px;font-weight:700;border-radius:999px;padding:0 12px;height:36px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);border-radius:999px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;font-size:14px;z-index:35;white-space:nowrap;max-width:calc(100% - 32px)}
+.toast span{overflow:hidden;text-overflow:ellipsis}
+.toast[hidden]{display:none}
+.toast button{flex:none;border:0;border-radius:999px;background:var(--yama);color:#1F2E45;font-weight:900;padding:6px 12px}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:10px 0}
+
+/* bottom nav */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--paper);border-top:2px solid var(--line);padding:6px 8px env(safe-area-inset-bottom,0px);display:grid;grid-template-columns:repeat(4,1fr)}
+.tabbar button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 8px;color:var(--muted);font-size:12px;font-weight:700;border-radius:16px}
+.tabbar .ic{font-size:22px;line-height:1;filter:grayscale(1);opacity:.7}
+.tabbar button[aria-selected="true"]{color:var(--shu)}
+.tabbar button[aria-selected="true"] .ic{filter:none;opacity:1}
+.fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;border:0;background:var(--shu);color:#fff;font-size:24px;font-weight:900;box-shadow:0 4px 0 rgba(0,0,0,.18);z-index:29}
+.fab[hidden]{display:none}
+@media (prefers-reduced-motion:no-preference){.view{animation:in .18s ease-out}@keyframes in{from{opacity:.4}to{opacity:1}}}
+</style>
+</head>
+<body>
+<header class="top"><span class="sun" aria-hidden="true"></span><h1>九州 5 日</h1><span class="cd" id="cd"></span></header>
+<main>
+
+<!-- 每日行程 -->
+<section class="view" id="v-days" data-tab="days">
+<div class="dtabs" role="tablist" aria-label="選擇日期"><button class="dtab" data-d="1" aria-label="Day 1 10/31"><small>10/31</small><b>1</b><span>☀️</span></button><button class="dtab" data-d="2" aria-label="Day 2 11/01"><small>11/01</small><b>2</b><span>🌦️</span></button><button class="dtab" data-d="3" aria-label="Day 3 11/02"><small>11/02</small><b>3</b><span>🌧️</span></button><button class="dtab" data-d="4" aria-label="Day 4 11/03"><small>11/03</small><b>4</b><span>☀️</span></button><button class="dtab" data-d="5" aria-label="Day 5 11/04"><small>11/04</small><b>5</b><span>🌤️</span></button></div>
+<div class="dayview" id="dv1" hidden>
+<section class="card dayhead"><div class="stamp"><small>10/31</small><strong>1</strong><small>日目</small></div>
+<div><h2>出發｜福岡夜訪</h2><p class="sub">星期六｜住 福岡王子大飯店百道濱</p></div>
+<div class="wx" data-day="1"><span class="wi">☀️</span><b>22°/16°</b><small>晴・降雨 10%</small></div></section>
+<section class="card"><h3>🚌 團體行程</h3><ul class="gl"><li><span>14:00 桃園機場第二航廈・華航 7 號櫃台後方集合（自行前往）</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Taoyuan%20International%20Airport%20Terminal%202&destination_place_id=ChIJAbSNMMSfQjQRgmckEsyxJ5k" target="_blank" rel="noopener">🧭 導航</a></li><li><span>CI116 16:40 起飛 → 20:00 抵達福岡（日本時間）</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Fukuoka%20Airport%20International%20Terminal&destination_place_id=ChIJ0UzWdzmQQTURcDrTaleyJTQ" target="_blank" rel="noopener">🧭 導航</a></li><li><span>團體車送抵飯店：福岡王子大飯店百道濱（約 21:30）</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Prince%20Hotel%20Fukuoka%20Momochihama&destination_place_id=ChIJ7WT-9ZGTQTUREdSEjae2kFQ" target="_blank" rel="noopener">🧭 導航</a></li></ul><p class="meal">🍱 晚餐：機上餐食</p></section>
+<section class="card free"><h3>🎒 自由行時段</h3><ol class="tl"><li><time>21:45</time><div class="tx"><b>計程車前往中洲屋台</b><p>約 20 分鐘，車資約 ¥2,500</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Nakasu%20Food%20Stalls%20Street&destination_place_id=ChIJRbuyypWRQTURbITjwMeuLnM" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>22:05</time><div class="tx"><b>中洲屋台宵夜</b><p>點熟食：博多拉麵、關東煮、烤雞串、一口煎餃。避開明太子、馬刺、生魚片。屋台多半只收現金，營業到午夜左右。</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Nakasu%20Food%20Stalls%20Street&destination_place_id=ChIJRbuyypWRQTURbITjwMeuLnM" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>23:00</time><div class="tx"><b>唐吉訶德 中洲店</b><p>24 小時營業。23:59 前結帳仍是舊制，可在店內直接免稅，記得帶護照。</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Don%20Quijote%20Nakasu&destination_place_id=ChIJU6_Qh5SRQTURhTacOuDrmZo" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>23:50</time><div class="tx"><b>計程車回 福岡王子大飯店百道濱</b><p>約 20 分鐘</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Prince%20Hotel%20Fukuoka%20Momochihama&destination_place_id=ChIJ7WT-9ZGTQTUREdSEjae2kFQ" target="_blank" rel="noopener">🧭 導航</a></div></li></ol></section><p class="tip">💡 今晚是萬聖節，中洲人潮多，兩人記得一起行動。</p></div><div class="dayview" id="dv2" hidden>
+<section class="card dayhead"><div class="stamp"><small>11/01</small><strong>2</strong><small>日目</small></div>
+<div><h2>全日自由行｜博多 → 中洲川端 → 天神</h2><p class="sub">星期日｜住 福岡王子大飯店百道濱</p></div>
+<div class="wx" data-day="2"><span class="wi">🌦️</span><b>21°/14°</b><small>陰後雨・降雨 70%</small></div></section>
+<section class="card"><h3>🚌 團體行程</h3><ul class="gl"><li><span>飯店早餐後全日自由活動（從 福岡王子大飯店百道濱 出發）</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Prince%20Hotel%20Fukuoka%20Momochihama&destination_place_id=ChIJ7WT-9ZGTQTUREdSEjae2kFQ" target="_blank" rel="noopener">🧭 導航</a></li></ul><p class="meal">🍱 早餐：飯店內｜午晚餐：自理</p></section>
+<section class="card free"><h3>🎒 自由行時段</h3><ol class="tl"><li><time>09:30</time><div class="tx"><b>計程車到博多站</b><p>約 20 分鐘，車資約 ¥2,500，省去走到地鐵站的路</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Hakata%20Station&destination_place_id=ChIJdbP55seRQTURkIu5RT0r4i4" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>10:00</time><div class="tx"><b>博多阪急 B1・Amu Plaza</b><p>博多阪急地下街買伴手禮和甜點；Amu Plaza 裡有 Hands 生活雜貨，兩者就在車站裡相連</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Hakata%20Hankyu&destination_place_id=ChIJBVmI6seRQTUR7ISYanGmR8o" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>10:50</time><div class="tx"><b>寶可夢中心福岡</b><p>在博多 Marui 2F，跟車站相連。週末人多時要先領入場整理券，建議一到博多站就先去領</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Pokemon%20Center%20FUKUOKA&destination_place_id=ChIJ74LQjMeRQTURouWqGzzDgF8" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>11:50</time><div class="tx"><b>午餐：博多麵街道</b><p>在博多站 Deitos 2F，多家拉麵店集中一層，不用再移動</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Hakata%20Noodle%20Street&destination_place_id=ChIJk_bAas-RQTURdtNqPgTuBjQ" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>13:00</time><div class="tx"><b>地鐵到中洲川端</b><p>空港線 2 站，約 3 分鐘，¥210</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Nakasukawabata%20Station&destination_place_id=ChIJiShWTeuRQTURuHO1zkcLEtI" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>13:10</time><div class="tx"><b>鈴懸本店</b><p>老字號和菓子，出站步行約 2 分鐘。內用常要排隊，外帶最快</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Suzukake%20Hakata%20Main%20Store&destination_place_id=ChIJ6zU6eMiRQTUR7EQ8viREEcc" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>13:40</time><div class="tx"><b>櫛田神社（可略過）</b><p>從鈴懸步行約 5 分鐘。如果下雨或累了，就直接去天神</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Kushida%20Shrine&destination_place_id=ChIJV2pTquqRQTURpI1FhH5siaE" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>14:20</time><div class="tx"><b>地鐵到天神</b><p>空港線 1 站，出站直通天神地下街</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Tenjin%20Station&destination_place_id=ChIJd5DjRI6RQTURMDt50eAUgg4" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>14:30</time><div class="tx"><b>天神地下街・藥妝</b><p>整條地下街有屋頂，下午就算下雨也不受影響；藥妝店都集中在這一帶</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Tenjin%20Underground%20Mall&destination_place_id=ChIJ970Xo46RQTURm6GUmUJcn6Y" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>15:30</time><div class="tx"><b>天神 Loft</b><p>文具、雜貨、扭蛋和公仔，很好逛</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Tenjin%20LOFT&destination_place_id=ChIJJ5Y9pJqRQTURrpXXDPV1VK0" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>16:30</time><div class="tx"><b>岩田屋本店 B2 甜點</b><p>百貨地下的草莓甜點和和菓子，順便休息</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Iwataya%20Main%20Store&destination_place_id=ChIJc3uKgYWRQTURWr1t_ndugOI" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>17:15</time><div class="tx"><b>唐吉訶德 天神本店</b><p>24 小時營業，共 5 層樓，退稅櫃台在 5F。從岩田屋步行約 5 分鐘</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Don%20Quijote%20Tenjin&destination_place_id=ChIJj9iUqoWRQTURWnFERWGSVHg" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>18:45</time><div class="tx"><b>晚餐：樂天地 牛腸鍋總本店</b><p>就在唐吉訶德隔壁，全是煮熟的鍋物，不用再移動</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Motsunabe%20Rakutenchi%20Tenjin%20Imaizumi%20So-Honten&destination_place_id=ChIJi-XxToSRQTURld0_Rxqs5KY" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>20:15</time><div class="tx"><b>計程車回 福岡王子大飯店百道濱</b><p>約 15 分鐘，車資約 ¥2,000</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Prince%20Hotel%20Fukuoka%20Momochihama&destination_place_id=ChIJ7WT-9ZGTQTUREdSEjae2kFQ" target="_blank" rel="noopener">🧭 導航</a></div></li></ol></section><p class="tip">💡 今天預報下午轉雨，所以下午都排在室內或地下街。今天起日本改採退稅新制：結帳先付含稅價，收據上的 QR Code 都要保存好。水炊雞肉鍋的套餐常附生雞肉，這次先不安排。</p></div><div class="dayview" id="dv3" hidden>
+<section class="card dayhead"><div class="stamp"><small>11/02</small><strong>3</strong><small>日目</small></div>
+<div><h2>柳川・熊本城・阿蘇</h2><p class="sub">星期一｜住 龜之井酒店阿蘇公園度假村</p></div>
+<div class="wx" data-day="3"><span class="wi">🌧️</span><b>21°/15°</b><small>雨後晴・降雨 90%</small></div></section>
+<section class="card"><h3>🚌 團體行程</h3><ul class="gl"><li><span>柳川遊船</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Yanagawa%20River%20Boat%20Ride%20Boarding%20Point&destination_place_id=ChIJCb9HAzezQTURtWxhrsO0UuY" target="_blank" rel="noopener">🧭 導航</a></li><li><span>午餐：柳川鰻魚飯（熟食，可安心吃）</span></li><li><span>熊本城（上天守閣）</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Kumamoto%20Castle&destination_place_id=ChIJWco6Ag70QDURMOTNdshmi14" target="_blank" rel="noopener">🧭 導航</a></li><li><span>櫻之馬場城彩苑</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Sakura-no-baba%20Josaien&destination_place_id=ChIJVVWF5hL0QDURK6OuEjMkKjw" target="_blank" rel="noopener">🧭 導航</a></li><li><span>大觀峰展望台</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Daikanbo%20Lookout&destination_place_id=ChIJX765iTgkQTURvrGlT2qYPQ8" target="_blank" rel="noopener">🧭 導航</a></li><li><span>入住飯店：龜之井酒店阿蘇公園度假村</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Kamenoi%20Hotel%20Aso%20Park%20Resort&destination_place_id=ChIJ24F8qRwnQTURVQ3W09KUFg4" target="_blank" rel="noopener">🧭 導航</a></li></ul><p class="meal">🍱 早餐：飯店內｜午餐：柳川鰻魚飯｜晚餐：飯店自助餐</p></section>
+<p class="tip">💡 上午可能下雨，坐遊船記得帶輕便雨衣。溫度是福岡的預報，阿蘇山上大約再低 5–8 度，晚上請穿厚外套。城彩苑的招牌馬刺是生食，可改吃芥末蓮藕或糰子；晚上自助餐避開生魚片區，飯後可以泡溫泉。</p></div><div class="dayview" id="dv4" hidden>
+<section class="card dayhead"><div class="stamp"><small>11/03</small><strong>4</strong><small>日目</small></div>
+<div><h2>草千里・由布院</h2><p class="sub">星期二｜住 福岡蒙特埃馬納酒店</p></div>
+<div class="wx" data-day="4"><span class="wi">☀️</span><b>19°/13°</b><small>晴・降雨 20%</small></div></section>
+<section class="card"><h3>🚌 團體行程</h3><ul class="gl"><li><span>草千里之濱</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Kusasenrigahama&destination_place_id=ChIJXathGaooQTURTo7Evdbc8_g" target="_blank" rel="noopener">🧭 導航</a></li><li><span>由布院・金鱗湖（贈 Milch 布丁）</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Lake%20Kinrin&destination_place_id=ChIJa7QFnn2uRjUR5ofN82Ctd44" target="_blank" rel="noopener">🧭 導航</a></li><li><span>天祖神社（水上鳥居）</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Tenso%20Shrine%20Yufuin&destination_place_id=ChIJHeTra32uRjURRvC131Fg964" target="_blank" rel="noopener">🧭 導航</a></li><li><span>湯之坪街道</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Yunotsubo%20Street&destination_place_id=ChIJMSNEu9CvRjURCQmOuH67y7Y" target="_blank" rel="noopener">🧭 導航</a></li><li><span>湯布院世界童話村</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Yufuin%20Floral%20Village&destination_place_id=ChIJWax-bn6uRjUReLLmqHrObCU" target="_blank" rel="noopener">🧭 導航</a></li><li><span>Miffy 森之廚房</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Miffy%20Mori%20no%20Bakery&destination_place_id=ChIJMVihsxitRjURqVSTJ8mogfQ" target="_blank" rel="noopener">🧭 導航</a></li><li><span>史努比茶屋</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=SNOOPY%20Chaya%20Yufuin&destination_place_id=ChIJg8kh-H6uRjURISKPf0GgqKI" target="_blank" rel="noopener">🧭 導航</a></li><li><span>晚餐：燒肉吃到飽（含酒水）</span></li><li><span>入住飯店：福岡蒙特埃馬納酒店</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Hotel%20Monte%20Hermana%20Fukuoka&destination_place_id=ChIJOf-kmZCRQTURgJqZF_Y7rJw" target="_blank" rel="noopener">🧭 導航</a></li></ul><p class="meal">🍱 早餐：飯店內｜午餐：由布院日式風味餐｜晚餐：燒肉吃到飽</p></section>
+<section class="card free"><h3>🎒 自由行時段</h3><ol class="tl"><li><time>21:00</time><div class="tx"><b>回到 福岡蒙特埃馬納酒店</b><p>時間依團體實際抵達為準</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Hotel%20Monte%20Hermana%20Fukuoka&destination_place_id=ChIJOf-kmZCRQTURgJqZF_Y7rJw" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>21:15</time><div class="tx"><b>唐吉訶德 天神本店補貨</b><p>搭計程車約 5 分鐘，不用走路</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Don%20Quijote%20Tenjin&destination_place_id=ChIJj9iUqoWRQTURWnFERWGSVHg" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>22:15</time><div class="tx"><b>計程車回 福岡蒙特埃馬納酒店</b><p>回飯店整理行李：託運行李一件、23 公斤內；退稅商品和收據放在隨手拿得到的地方</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Hotel%20Monte%20Hermana%20Fukuoka&destination_place_id=ChIJOf-kmZCRQTURgJqZF_Y7rJw" target="_blank" rel="noopener">🧭 導航</a></div></li></ol></section><p class="tip">💡 今天是日本國定假日（文化之日），由布院人潮會比較多。湯之坪街道的店大多 17:00 左右關門。</p></div><div class="dayview" id="dv5" hidden>
+<section class="card dayhead"><div class="stamp"><small>11/04</small><strong>5</strong><small>日目</small></div>
+<div><h2>A 路線｜自由採買・返台</h2><p class="sub">星期三｜住 溫暖的家</p></div>
+<div class="wx" data-day="5"><span class="wi">🌤️</span><b>19°/13°</b><small>晴時多雲・降雨 20%</small></div></section>
+<section class="card"><h3>🚌 團體行程</h3><ul class="gl"><li><span>福岡蒙特埃馬納酒店 早餐、退房（行李上車）</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Hotel%20Monte%20Hermana%20Fukuoka&destination_place_id=ChIJOf-kmZCRQTURgJqZF_Y7rJw" target="_blank" rel="noopener">🧭 導航</a></li><li><span>團體前往免稅店</span></li><li><span>自由活動</span></li><li><span>集合前往福岡空港（時間待領隊公布）</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Fukuoka%20Airport%20International%20Terminal&destination_place_id=ChIJ0UzWdzmQQTURcDrTaleyJTQ" target="_blank" rel="noopener">🧭 導航</a></li><li><span>CI117 21:00 起飛 → 22:25 抵達桃園</span><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Taoyuan%20International%20Airport%20Terminal%202&destination_place_id=ChIJAbSNMMSfQjQRgmckEsyxJ5k" target="_blank" rel="noopener">🧭 導航</a></li></ul><p class="meal">🍱 早餐：飯店內｜午餐代金 ¥2,500｜晚餐代金 ¥2,000＋機上餐</p></section>
+<section class="card free"><h3>🎒 自由行時段</h3><ol class="tl"><li><time>11:30</time><div class="tx"><b>運河城博多</b><p>大型室內購物中心</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=CANAL%20CITY%20HAKATA&destination_place_id=ChIJYcOBiZWRQTUR0Rl0ehe67eA" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>11:45</time><div class="tx"><b>午餐：拉麵競技場（運河城 5F）</b><p>多家拉麵店集中一層，¥2,500 代金綽綽有餘</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Ramen%20Stadium%20Canal%20City&destination_place_id=ChIJ__-_i5WRQTURK3o-F5gUeqs" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>13:00</time><div class="tx"><b>吉卜力商店・運河城逛街</b><p>吉卜力商店在 OPA 棟 B1F；另有 Gundam Base 等動漫店</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Donguri%20Republic%20Canal%20City&destination_place_id=ChIJX_4MHb6RQTURjnYqAkqr7T4" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>14:30</time><div class="tx"><b>計程車到博多站</b><p>約 5 分鐘</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Hakata%20Station&destination_place_id=ChIJdbP55seRQTURkIu5RT0r4i4" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>14:40</time><div class="tx"><b>博多站 Miyagemon 市場</b><p>Deitos 1F，九州伴手禮集中在這裡：明太子仙貝、博多通饅頭等</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Miyagemon%20Market%20Hakata&destination_place_id=ChIJJZ8gdsiRQTURnKUbnI4FV2c" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>17:30</time><div class="tx"><b>集合（暫定）</b><p>目前先抓這個時間，等領隊公布再修正</p></div></li><li><time>抵達機場</time><div class="tx"><b>先到退稅機台，再辦託運</b><p>帶著護照、退稅商品和收據到海關自助機台掃描，完成後才去櫃台託運行李</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Fukuoka%20Airport%20International%20Terminal&destination_place_id=ChIJ0UzWdzmQQTURcDrTaleyJTQ" target="_blank" rel="noopener">🧭 導航</a></div></li><li><time>19:00</time><div class="tx"><b>晚餐：機場國際線</b><p>通關後有新的美食區，用 ¥2,000 代金吃晚餐</p><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Fukuoka%20Airport%20International%20Terminal&destination_place_id=ChIJ0UzWdzmQQTURcDrTaleyJTQ" target="_blank" rel="noopener">🧭 導航</a></div></li></ol></section><p class="tip">💡 自由活動的放人地點和集合時間還沒公布，我先以博多一帶來排，之後可以再調整。</p></div>
+<p class="muted" style="font-size:12px;text-align:center" id="wxnote">天氣為 10/27 發布的預報，有網路時會自動更新成當地最新預報。</p>
+</section>
+
+<!-- 住宿 -->
+<section class="view" id="v-hotel" data-tab="hotel" hidden>
+<h2 class="vt">住宿</h2>
+<section class="card hotel"><h3>福岡王子大飯店百道濱</h3><p class="sub">10/31–11/01（2 晚）</p><p>福岡県福岡市早良区百道浜二丁目3番23号</p><p class="muted">鄰近福岡塔、百道海濱。到天神約 15 分鐘車程，附近地鐵站要走一段路，建議搭計程車。</p>
+<div class="row2"><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Prince%20Hotel%20Fukuoka%20Momochihama&destination_place_id=ChIJ7WT-9ZGTQTUREdSEjae2kFQ" target="_blank" rel="noopener">🧭 導航</a><a class="call" href="tel:092-400-3323">☎ 092-400-3323</a></div></section><section class="card hotel"><h3>龜之井酒店阿蘇公園度假村</h3><p class="sub">11/02（1 晚）</p><p>熊本県阿蘇市黒川1230</p><p class="muted">館內有天然溫泉和露天浴池。山區晚上很冷。</p>
+<div class="row2"><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Kamenoi%20Hotel%20Aso%20Park%20Resort&destination_place_id=ChIJ24F8qRwnQTURVQ3W09KUFg4" target="_blank" rel="noopener">🧭 導航</a><a class="call" href="tel:096-734-0811">☎ 096-734-0811</a></div></section><section class="card hotel"><h3>福岡蒙特埃馬納酒店</h3><p class="sub">11/03（1 晚）</p><p>福岡県福岡市中央区渡辺通3-4-24</p><p class="muted">就在天神旁邊，步行可到渡邊通站，晚上去補貨很方便。</p>
+<div class="row2"><a class="go" href="https://www.google.com/maps/dir/?api=1&destination=Hotel%20Monte%20Hermana%20Fukuoka&destination_place_id=ChIJOf-kmZCRQTURgJqZF_Y7rJw" target="_blank" rel="noopener">🧭 導航</a><a class="call" href="tel:092-735-7111">☎ 092-735-7111</a></div></section>
+<h2 class="vt">實用資訊</h2>
+<div class="info">
+<section class="card"><h3>✈️ 航班與集合</h3><p>去程 CI116｜10/31 16:40 桃園 T2 → 20:00 福岡<br>回程 CI117｜11/04 21:00 福岡 → 22:25 桃園</p><p>10/31 14:00 在桃園機場第二航廈、華航 7 號櫃台後方集合（自行前往）。</p>
+<div class="row2"><a class="call" href="tel:0986115053">☎ 領隊 A 陳又溦</a><a class="call" href="tel:0988809205">☎ 領隊 B 張晏慈</a></div><p class="muted">在日本請改撥領隊日本手機：A 080-3563-5554、B 070-3203-6947。記得先告訴領隊「不吃生食」。</p></section>
+<section class="card"><h3>🚇 交通：iPhone 和 Samsung 各自怎麼搭</h3>
+<p>自由行只會搭福岡市地下鐵（Day 2 的博多・中洲川端・天神），其他時段都搭計程車。福岡地下鐵全線都能用信用卡感應過閘門。</p>
+<div class="phone"><b>📱 iPhone</b><ul><li>最簡單：用 Apple Pay 裡的信用卡直接感應進出站。</li><li>也可以在「錢包」新增 Suica，用 Mastercard 或 JCB 儲值（台灣發行的 Visa 卡常儲值失敗）。</li></ul></div>
+<div class="phone"><b>📱 Samsung S23 Ultra（台灣版）</b><ul><li>台灣版沒有日本的 FeliCa 晶片，不能加手機版 Suica。</li><li>改用實體信用卡感應，或用 Samsung Wallet／Google 錢包裡的信用卡感應，地鐵閘門都能過。</li><li>想要實體卡也可以：在地鐵站售票機買「はやかけん」，押金 ¥500。</li></ul></div>
+<p>⚠️ 一張卡（或一支手機）只能過一個人，兩人要各刷各的。進站和出站要用同一張卡或同一支手機。</p>
+<p>🚕 計程車：兩支手機都能裝「GO」叫車 App，可以綁信用卡付款。路上招車也行，大部分車都能刷卡。</p></section>
+<section class="card"><h3>🧾 退稅新制（11/1 起）</h3><p>同一家店同一天消費滿 ¥5,000（未稅）才能辦退稅。結帳時出示護照，先付含稅價，再掃收據上的 QR Code 登記退款方式（選信用卡最快）。Day 5 到機場後，先帶著商品和收據到海關機台查驗，再去櫃台託運。</p><p>10/31 晚上 23:59 前在唐吉訶德結帳，還是舊制的店內直接免稅。</p></section>
+<section class="card"><h3>💴 換匯與付款</h3><p>大部分店家都能刷卡，但屋台和小店多半只收現金。建議每人帶 ¥30,000–50,000 現金。可以在台銀等銀行線上結匯，再到桃園機場領取，匯率通常比較好。</p></section>
+<section class="card"><h3>🛡️ 保險</h3><p>旅行社依法有投保責任險，但日本看病很貴，建議另外投保個人旅平險，加上海外突發疾病和旅遊不便險。</p></section>
+<section class="card"><h3>🆘 緊急電話</h3>
+<div class="row2"><a class="call" href="tel:110">☎ 警察 110</a><a class="call" href="tel:119">☎ 救護・消防 119</a><a class="call" href="tel:09019229740">☎ 駐福岡辦事處急難救助</a><a class="call" href="tel:+886922392215">☎ 山富 王彥濬</a></div></section>
+</div>
+</section>
+
+<!-- 行李 -->
+<section class="view" id="v-pack" data-tab="pack" hidden>
+<div class="seg" role="tablist" aria-label="清單"><button id="s-pack" aria-selected="true">🧳 行李清單</button><button id="s-buy" aria-selected="false">🛍️ 必買清單</button></div>
+<p class="prog" id="prog"></p>
+<div id="l-pack"><section class="card"><h3>證件與錢</h3><ul class="chk"><li><label><input type="checkbox" data-k="p0-0"><span>護照（效期 6 個月以上）</span></label></li><li><label><input type="checkbox" data-k="p0-1"><span>信用卡兩張以上</span></label></li><li><label><input type="checkbox" data-k="p0-2"><span>日圓現金</span></label></li><li><label><input type="checkbox" data-k="p0-3"><span>台幣（回程交通用）</span></label></li><li><label><input type="checkbox" data-k="p0-4"><span>Visit Japan Web QR Code 截圖</span></label></li></ul></section><section class="card"><h3>3C</h3><ul class="chk"><li><label><input type="checkbox" data-k="p1-0"><span>手機和充電線</span></label></li><li><label><input type="checkbox" data-k="p1-1"><span>行動電源（最多 2 個，只能放隨身行李）</span></label></li><li><label><input type="checkbox" data-k="p1-2"><span>eSIM 安裝 QR Code</span></label></li><li><label><input type="checkbox" data-k="p1-3"><span>插頭與台灣相同，不需轉接頭</span></label></li></ul></section><section class="card"><h3>衣物</h3><ul class="chk"><li><label><input type="checkbox" data-k="p2-0"><span>洋蔥式穿搭：短袖加薄長袖</span></label></li><li><label><input type="checkbox" data-k="p2-1"><span>阿蘇用厚外套</span></label></li><li><label><input type="checkbox" data-k="p2-2"><span>好走的鞋</span></label></li><li><label><input type="checkbox" data-k="p2-3"><span>折傘或輕便雨衣</span></label></li></ul></section><section class="card"><h3>個人用品</h3><ul class="chk"><li><label><input type="checkbox" data-k="p3-0"><span>個人常備藥（腸胃藥、暈車藥）</span></label></li><li><label><input type="checkbox" data-k="p3-1"><span>牙刷、保養品（液體每罐 100ml 內）</span></label></li><li><label><input type="checkbox" data-k="p3-2"><span>小垃圾袋</span></label></li><li><label><input type="checkbox" data-k="p3-3"><span>摺疊購物袋（裝戰利品）</span></label></li></ul></section></div>
+<div id="l-buy" hidden><section class="card"><h3>藥妝</h3><ul class="chk"><li><label><input type="checkbox" data-k="b0-0"><span>參天 Sante FX 眼藥水</span></label></li><li><label><input type="checkbox" data-k="b0-1"><span>太田胃散</span></label></li><li><label><input type="checkbox" data-k="b0-2"><span>EVE 止痛藥</span></label></li><li><label><input type="checkbox" data-k="b0-3"><span>撒隆巴斯貼布</span></label></li><li><label><input type="checkbox" data-k="b0-4"><span>Anessa 防曬</span></label></li><li><label><input type="checkbox" data-k="b0-5"><span>肌研（Hada Labo）</span></label></li><li><label><input type="checkbox" data-k="b0-6"><span>Curel 珂潤</span></label></li><li><label><input type="checkbox" data-k="b0-7"><span>LuLuLun 面膜</span></label></li><li><label><input type="checkbox" data-k="b0-8"><span>CANMAKE 彩妝</span></label></li><li><label><input type="checkbox" data-k="b0-9"><span>Saborino 早晚安面膜</span></label></li></ul></section><section class="card"><h3>唐吉訶德</h3><ul class="chk"><li><label><input type="checkbox" data-k="b1-0"><span>唐吉訶德原創美妝 SEKACOS</span></label></li><li><label><input type="checkbox" data-k="b1-1"><span>日本限定口味零食</span></label></li><li><label><input type="checkbox" data-k="b1-2"><span>唐吉訶德限定巧克力</span></label></li><li><label><input type="checkbox" data-k="b1-3"><span>出發前先存 LIVE JAPAN 的唐吉訶德優惠券</span></label></li></ul></section><section class="card"><h3>有趣的商店</h3><ul class="chk"><li><label><input type="checkbox" data-k="b2-0"><span>寶可夢中心福岡（博多 Marui 2F）</span></label></li><li><label><input type="checkbox" data-k="b2-1"><span>Loft 文具雜貨</span></label></li><li><label><input type="checkbox" data-k="b2-2"><span>Hands 生活雜貨</span></label></li><li><label><input type="checkbox" data-k="b2-3"><span>PARCO 扭蛋與動漫周邊</span></label></li><li><label><input type="checkbox" data-k="b2-4"><span>吉卜力商店（運河城）</span></label></li></ul></section><section class="card"><h3>九州限定伴手禮</h3><ul class="chk"><li><label><input type="checkbox" data-k="b3-0"><span>明太子仙貝（めんべい）</span></label></li><li><label><input type="checkbox" data-k="b3-1"><span>博多通饅頭（博多通りもん）</span></label></li><li><label><input type="checkbox" data-k="b3-2"><span>鈴懸和菓子</span></label></li><li><label><input type="checkbox" data-k="b3-3"><span>草莓（あまおう）甜點</span></label></li><li><label><input type="checkbox" data-k="b3-4"><span>熊本熊周邊（Day 3 城彩苑）</span></label></li></ul></section></div>
+</section>
+
+<!-- 預算 -->
+<section class="view" id="v-budget" data-tab="budget" hidden>
+<section class="card conv" id="fx"><h3>💱 匯率換算</h3>
+<div class="field"><label for="jpy">¥ 日圓</label><input id="jpy" inputmode="decimal" autocomplete="off" value="0"><button class="clr" aria-label="日圓歸零">✕</button></div>
+<div class="expr" id="expr" aria-live="polite"></div>
+<div class="chips" aria-label="常用金額"><div class="chip"><span class="lbl" aria-hidden="true">¥100</span><button class="set" data-v="100" aria-label="帶入 ¥100"></button><button class="add" data-v="100" aria-label="加上 ¥100">＋</button></div><div class="chip"><span class="lbl" aria-hidden="true">¥500</span><button class="set" data-v="500" aria-label="帶入 ¥500"></button><button class="add" data-v="500" aria-label="加上 ¥500">＋</button></div><div class="chip"><span class="lbl" aria-hidden="true">¥1K</span><button class="set" data-v="1000" aria-label="帶入 ¥1K"></button><button class="add" data-v="1000" aria-label="加上 ¥1K">＋</button></div><div class="chip"><span class="lbl" aria-hidden="true">¥2K</span><button class="set" data-v="2000" aria-label="帶入 ¥2K"></button><button class="add" data-v="2000" aria-label="加上 ¥2K">＋</button></div><div class="chip"><span class="lbl" aria-hidden="true">¥2.5K</span><button class="set" data-v="2500" aria-label="帶入 ¥2.5K"></button><button class="add" data-v="2500" aria-label="加上 ¥2.5K">＋</button></div><div class="chip"><span class="lbl" aria-hidden="true">¥5K</span><button class="set" data-v="5000" aria-label="帶入 ¥5K"></button><button class="add" data-v="5000" aria-label="加上 ¥5K">＋</button></div><div class="chip"><span class="lbl" aria-hidden="true">¥10K</span><button class="set" data-v="10000" aria-label="帶入 ¥10K"></button><button class="add" data-v="10000" aria-label="加上 ¥10K">＋</button></div><div class="chip"><span class="lbl" aria-hidden="true">¥30K</span><button class="set" data-v="30000" aria-label="帶入 ¥30K"></button><button class="add" data-v="30000" aria-label="加上 ¥30K">＋</button></div></div>
+<div class="field"><label for="twd">NT$</label><input id="twd" inputmode="decimal" autocomplete="off" value="0"><button class="clr" aria-label="台幣歸零">✕</button></div>
+<div class="rate"><label for="rate">1 日圓 =</label><input id="rate" inputmode="decimal" value="0.2056"><span>台幣</span><button class="btn" id="live">更新即時匯率</button></div>
+<div class="rate"><label><input type="checkbox" id="fee"> 加計海外刷卡手續費 1.5%</label></div>
+<p class="status" id="st">點按鈕左半邊（淺色）＝直接帶入；點右半邊（紅色 ＋）＝加上去。按 ✕ 歸零，匯率可以直接改。</p>
+<button class="btn" id="toExp" style="margin-top:10px;width:100%">把這筆日圓記進帳本</button></section>
+
+<section class="card"><h3>📒 旅費帳本</h3>
+<div class="sum"><div><small>總支出</small><b id="sumAll">¥0</b><i id="sumAllT">NT$0</i></div><div><small>筆數</small><b id="sumN">0</b><i>筆</i></div></div>
+<div class="form">
+<input id="eAmt" inputmode="numeric" placeholder="金額（日圓）" aria-label="金額（日圓）">
+<input id="eNote" placeholder="項目（可不填）" aria-label="項目">
+<button class="btn full" id="eAdd">新增一筆</button></div>
+<ul class="exp" id="eList"></ul></section>
+
+<section class="card"><h3>🎫 團體提供的餐費</h3><p style="font-size:14px;margin:0">Day 5 午餐代金 ¥2,500、晚餐代金 ¥2,000（每人）。行程中其他餐食大多已包含，Day 1 宵夜和 Day 2 全天需要自付。</p></section>
+</section>
+</main>
+
+<div class="toast" id="toast" role="status" hidden><span id="toastMsg"></span><button id="undo">復原</button></div>
+<button class="fab" id="fab" aria-label="打開匯率換算">¥</button>
+<nav class="tabbar" role="tablist" aria-label="主選單">
+<button data-go="days" aria-selected="true"><span class="ic">⛩️</span>每日行程</button>
+<button data-go="hotel" aria-selected="false"><span class="ic">🏨</span>住宿</button>
+<button data-go="pack" aria-selected="false"><span class="ic">🧳</span>行李</button>
+<button data-go="budget" aria-selected="false"><span class="ic">💴</span>預算</button>
+</nav>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const DATES=['2026-10-31','2026-11-01','2026-11-02','2026-11-03','2026-11-04'];
+const todayJST=new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
+
+/* tabs */
+let curDay=1;
+function showTab(t,push){$$('.view').forEach(v=>v.hidden=v.dataset.tab!==t);$$('.tabbar button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.go===t)));$('#fab').hidden=t==='budget';window.scrollTo(0,0);if(push!==false)location.hash=t==='days'?'day'+curDay:t}
+function showDay(n){curDay=n;$$('.dayview').forEach(v=>v.hidden=v.id!=='dv'+n);$$('.dtab').forEach(b=>b.setAttribute('aria-selected',String(+b.dataset.d===n)))}
+$$('.tabbar button').forEach(b=>b.onclick=()=>showTab(b.dataset.go));
+$$('.dtab').forEach(b=>b.onclick=()=>{showDay(+b.dataset.d);location.hash='day'+b.dataset.d;window.scrollTo(0,0)});
+$('#fab').onclick=()=>{showTab('budget');setTimeout(()=>$('#jpy').focus({preventScroll:true}),50)};
+const ti=DATES.indexOf(todayJST);if(ti>=0){const b=$(`.dtab[data-d="${ti+1}"] small`);if(b)b.textContent='今天'}
+function route(){const h=location.hash.slice(1);const m=h.match(/^day([1-5])$/);if(m){showDay(+m[1]);showTab('days',false)}else if(['hotel','pack','budget'].includes(h))showTab(h,false);else{showDay(ti>=0?ti+1:1);showTab('days',false)}}
+window.addEventListener('hashchange',route);showDay(ti>=0?ti+1:1);route();
+
+/* countdown */
+(function(){const d0=new Date('2026-10-31T00:00:00+08:00'),now=new Date();const days=Math.ceil((d0-now)/864e5);$('#cd').textContent=days>0?`出發倒數 ${days} 天`:(ti>=0?`第 ${ti+1} 天`:'10/31–11/04')})();
+
+/* converter */
+const J=$('#jpy'),T=$('#twd'),R=$('#rate'),F=$('#fee'),S=$('#st'),EX=$('#expr');
+const num=v=>parseFloat(String(v).replace(/[^0-9.]/g,''))||0;
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+let parts=[];
+const r=()=>num(R.value)*(F.checked?1.015:1);
+function showE(){EX.textContent=parts.length>1?parts.map(p=>'¥'+fmt(p)).join(' + '):''}
+function setJ(v){J.value=fmt(v);T.value=fmt(v*r());showE()}
+J.addEventListener('input',()=>{parts=[num(J.value)];T.value=fmt(num(J.value)*r());showE()});
+T.addEventListener('input',()=>{const x=r();parts=[];J.value=x?fmt(num(T.value)/x):'0';showE()});
+J.addEventListener('focus',()=>{if(num(J.value)===0)J.value=''});T.addEventListener('focus',()=>{if(num(T.value)===0)T.value=''});
+R.addEventListener('input',()=>{LS.set('fxRate',R.value);setJ(num(J.value));renderExp()});F.addEventListener('change',()=>setJ(num(J.value)));
+$$('.chip .set').forEach(b=>b.onclick=()=>{parts=[];setJ(+b.dataset.v)});
+$$('.chip .add').forEach(b=>b.onclick=()=>{if(!parts.length&&num(J.value))parts=[num(J.value)];parts.push(+b.dataset.v);setJ(parts.reduce((a,c)=>a+c,0))});
+$$('.clr').forEach(b=>b.onclick=()=>{parts=[];J.value='0';T.value='0';showE()});
+R.value=LS.get('fxRate',R.value);
+async function liveRate(manual){if(manual)S.textContent='正在取得即時匯率…';try{const d=await (await fetch('https://open.er-api.com/v6/latest/JPY')).json();const v=d.rates.TWD.toFixed(4);R.value=v;LS.set('fxRate',v);S.textContent='已更新即時匯率：1 日圓 = '+v+' 台幣（'+new Date().toLocaleString('zh-TW',{hour12:false})+'）';setJ(num(J.value));renderExp()}catch(e){if(manual)S.textContent='目前無法連線取得即時匯率，沿用現在的匯率 '+R.value+'；也可以直接手動輸入。'}}
+$('#live').onclick=()=>liveRate(true);
+setJ(0);liveRate(false);
+
+/* checklists */
+function updProg(){const l=$('#l-pack').hidden?'#l-buy':'#l-pack';const a=$$(l+' input'),c=a.filter(x=>x.checked).length;$('#prog').textContent=`已完成 ${c} / ${a.length}`}
+$$('.chk input').forEach(c=>{c.checked=LS.get(c.dataset.k,'0')==='1';c.onchange=()=>{LS.set(c.dataset.k,c.checked?'1':'0');updProg()}});
+function seg(p){$('#l-pack').hidden=!p;$('#l-buy').hidden=p;$('#s-pack').setAttribute('aria-selected',String(p));$('#s-buy').setAttribute('aria-selected',String(!p));updProg()}
+$('#s-pack').onclick=()=>seg(true);$('#s-buy').onclick=()=>seg(false);updProg();
+
+/* expenses */
+let exps=[];try{exps=JSON.parse(LS.get('exps','[]'))}catch(e){exps=[]}
+function saveExp(){LS.set('exps',JSON.stringify(exps))}
+function tw(y){return 'NT$'+fmt(y*num(R.value))}
+let lastDel=null,toastT=0;
+function renderExp(){const ul=$('#eList');ul.innerHTML='';let all=0;
+ exps.forEach((e,i)=>{all+=e.a;
+  const li=document.createElement('li');const t=document.createElement('div');const b=document.createElement('b');b.textContent=e.n||'未命名';const w=document.createElement('div');w.className='who';w.textContent=e.d;t.append(b,w);
+  const amt=document.createElement('div');amt.style.textAlign='right';const ab=document.createElement('b');ab.textContent='¥'+fmt(e.a);const at=document.createElement('div');at.className='who';at.textContent=tw(e.a);amt.append(ab,at);
+  const del=document.createElement('button');del.className='del';del.setAttribute('aria-label','刪除「'+(e.n||'未命名')+'」');del.textContent='刪除';del.onclick=()=>delExp(i);
+  li.append(t,amt,del);ul.prepend(li)});
+ if(!exps.length){const li=document.createElement('li');li.className='empty';li.style.display='block';li.textContent='還沒有記帳。輸入金額，按「新增一筆」就能開始記。';ul.append(li)}
+ $('#sumAll').textContent='¥'+fmt(all);$('#sumAllT').textContent=tw(all);$('#sumN').textContent=exps.length}
+function delExp(i){lastDel={i,e:exps[i]};exps.splice(i,1);saveExp();renderExp();$('#toastMsg').textContent='已刪除「'+(lastDel.e.n||'未命名')+'」';$('#toast').hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{$('#toast').hidden=true;lastDel=null},5000)}
+$('#undo').onclick=()=>{if(!lastDel)return;exps.splice(lastDel.i,0,lastDel.e);saveExp();renderExp();lastDel=null;$('#toast').hidden=true};
+$('#eAdd').onclick=()=>{const a=num($('#eAmt').value);if(!a){$('#eAmt').focus();$('#eAmt').placeholder='請先輸入金額（日圓）';return}
+ exps.push({a,n:$('#eNote').value.trim(),d:new Date(Date.now()+9*3600e3).toISOString().slice(5,16).replace('-','/').replace('T',' ')});saveExp();$('#eAmt').value='';$('#eNote').value='';renderExp()};
+$('#toExp').onclick=()=>{const a=num(J.value);if(!a)return;$('#eAmt').value=a;$('#eNote').focus()};
+renderExp();
+
+/* weather: try live forecast, keep built-in one if offline */
+(async()=>{const L={1:[33.59,130.40],2:[33.59,130.40],3:[32.93,131.07],4:[33.27,131.37],5:[33.59,130.40]};
+ const ico=c=>c<=1?['☀️','晴']:c<=3?['⛅','多雲']:c<=48?['🌫️','霧']:c<=67?['🌧️','雨']:c<=77?['🌨️','雪']:c<=82?['🌦️','陣雨']:['⛈️','雷雨'];
+ try{let ok=0;for(const d in L){const[la,lo]=L[d];const dt=DATES[d-1];const j=await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&start_date=${dt}&end_date=${dt}`)).json();const x=j.daily;if(!x||x.weather_code[0]==null)continue;const[i,t]=ico(x.weather_code[0]);
+  $(`.wx[data-day="${d}"]`).innerHTML=`<span class="wi">${i}</span><b>${Math.round(x.temperature_2m_max[0])}°/${Math.round(x.temperature_2m_min[0])}°</b><small>${t}・降雨 ${x.precipitation_probability_max[0]??'-'}%</small>`;const tab=$(`.dtab[data-d="${d}"] span`);if(tab)tab.textContent=i;ok++}
+  if(ok)$('#wxnote').textContent='天氣已更新為當地最新預報（Day 3 阿蘇、Day 4 由布院）'+new Date().toLocaleString('zh-TW',{hour12:false})}catch(e){}})();
+</script>
+</body>
+</html>
